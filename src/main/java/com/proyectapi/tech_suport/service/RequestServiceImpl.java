@@ -31,16 +31,20 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<RequestEntity> getAllRequests() {
-        return requestRepository.findAll();
+        return requestRepository.findAllByOrderByCreatedAtAsc();
     }
 
     @Override
     public RequestEntity updateRequest(Long id, RequestEntity updatedRequest) {
         return requestRepository.findById(id)
                 .map(req -> {
-                    req.setDescription(updatedRequest.getDescription());
+                req.setDescription(updatedRequest.getDescription());
+                req.setRequestStatus(updatedRequest.getRequestStatus());
+                req.setEmployee(updatedRequest.getEmployee());
+                req.setTopic(updatedRequest.getTopic());
+                req.setUpdatedAt(java.time.LocalDateTime.now());
                     return requestRepository.save(req);
-                }).orElseThrow(() -> new RuntimeException("Request not found"));
+                }).orElseThrow(() -> new RuntimeException("Request not found with id \" + id"));
     }
 
     @Override
