@@ -4,11 +4,12 @@ import com.proyectapi.tech_suport.employee.EmployeeDTO;
 import com.proyectapi.tech_suport.service.EmployeeReadService;
 import com.proyectapi.tech_suport.service.EmployeeWriteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-
 
 @RestController
 @RequestMapping("/api/v1/employees")
@@ -22,7 +23,6 @@ public class EmployeeController {
         this.employeeReadService = employeeReadService;
         this.employeeWriteService = employeeWriteService;
     }
-
 
     // GET /employees
     @GetMapping
@@ -38,11 +38,23 @@ public class EmployeeController {
         return ResponseEntity.ok(saved);
     }
 
-    // GET /employees/{id}
+    /*
+     * // GET /employees/{id}
+     * 
+     * @GetMapping("/{id}")
+     * public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable Long id) {
+     * EmployeeDTO employee = employeeReadService.getEmployeeById(id);
+     * return ResponseEntity.ok(employee);
+     */
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable Long id) {
-        EmployeeDTO employee = employeeReadService.getEmployeeById(id);
-        return ResponseEntity.ok(employee);
+        try {
+            EmployeeDTO employee = employeeReadService.getEmployeeById(id);
+            return ResponseEntity.ok(employee);
+        } catch (RuntimeException e) {
+            // Traducimos RuntimeException a HTTP 404
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
     // PUT /employees/{id}

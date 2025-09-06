@@ -2,7 +2,10 @@ package com.proyectapi.tech_suport.implementations;
 
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.proyectapi.tech_suport.employee.EmployeeDTO;
 import com.proyectapi.tech_suport.employee.EmployeeEntity;
@@ -22,10 +25,10 @@ public class EmployeeServiceImpl implements EmployeeReadService, EmployeeWriteSe
     private final EmployeeMapper mapper;
 
     @Override
-    public EmployeeDTO getEmployeeById(Long id) {
-        EmployeeEntity entity = employeeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
-        return mapper.toDTO(entity);
+public EmployeeDTO getEmployeeById(Long id) {
+    EmployeeEntity entity = employeeRepository.findById(id)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
+    return mapper.toDTO(entity);
     }
 
     @Override
