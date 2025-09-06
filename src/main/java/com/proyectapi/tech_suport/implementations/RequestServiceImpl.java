@@ -1,7 +1,8 @@
-package com.proyectapi.tech_suport.service;
+package com.proyectapi.tech_suport.implementations;
 
 import com.proyectapi.tech_suport.request.RequestEntity;
 import com.proyectapi.tech_suport.request.RequestStatusEntity;
+import com.proyectapi.tech_suport.service.RequestService;
 import com.proyectapi.tech_suport.repository.RequestRepository;
 import com.proyectapi.tech_suport.repository.RequestStatusRepository;
 
@@ -15,7 +16,7 @@ public class RequestServiceImpl implements RequestService {
     private final RequestRepository requestRepository;
     private final RequestStatusRepository requestStatusRepository;
 
-    public RequestServiceImpl(RequestRepository requestRepository, RequestStatusRepository requestStatusRepository) {    
+    public RequestServiceImpl(RequestRepository requestRepository, RequestStatusRepository requestStatusRepository) {
         this.requestRepository = requestRepository;
         this.requestStatusRepository = requestStatusRepository;
     }
@@ -38,13 +39,13 @@ public class RequestServiceImpl implements RequestService {
     public RequestEntity updateRequest(Long id, RequestEntity updatedRequest) {
         return requestRepository.findById(id)
                 .map(req -> {
-                req.setDescription(updatedRequest.getDescription());
-                req.setRequestStatus(updatedRequest.getRequestStatus());
-                req.setEmployee(updatedRequest.getEmployee());
-                req.setTopic(updatedRequest.getTopic());
-                req.setUpdatedAt(java.time.LocalDateTime.now());
+                    req.setDescription(updatedRequest.getDescription());
+                    req.setRequestStatus(updatedRequest.getRequestStatus());
+                    req.setEmployee(updatedRequest.getEmployee());
+                    req.setTopic(updatedRequest.getTopic());
+                    req.setUpdatedAt(java.time.LocalDateTime.now());
                     return requestRepository.save(req);
-                }).orElseThrow(() -> new RuntimeException("Request not found with id \" + id"));
+                }).orElseThrow(() -> new RuntimeException("Request not found with id " + id));
     }
 
     @Override
@@ -61,6 +62,12 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public void deleteRequest(Long id) {
-        requestRepository.deleteById(id);
+        requestRepository.findById(id).ifPresent(request -> {
+            if ("RESOLVED".equals(request.getRequestStatus().getName())) {
+                requestRepository.deleteById(id);
+            } else {
+                throw new RuntimeException("Cannot delete a request that is not resolved");
+            }
+        });
     }
 }
