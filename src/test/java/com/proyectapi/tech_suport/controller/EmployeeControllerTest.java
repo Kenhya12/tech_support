@@ -1,4 +1,4 @@
-package com.proyectapi.tech_suport.request;
+package com.proyectapi.tech_suport.controller;
 
 import com.proyectapi.tech_suport.employee.EmployeeEntity;
 import com.proyectapi.tech_suport.repository.EmployeeRepository;
@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
@@ -24,17 +23,15 @@ class EmployeeControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private EmployeeRepository employeeRepository; // usar directamente para insertar datos
+    private EmployeeRepository employeeRepository;
 
     private EmployeeEntity emp1;
     private EmployeeEntity emp2;
 
     @BeforeEach
     void setUp() {
-        // Limpiar tabla antes de cada test
         employeeRepository.deleteAll();
 
-        // Crear empleados de prueba directamente con la entidad
         emp1 = EmployeeEntity.builder()
                 .name("Paula")
                 .email("paula@example.com")
@@ -47,7 +44,6 @@ class EmployeeControllerTest {
                 .department("HR")
                 .build();
 
-        // Guardar en la base de datos H2
         employeeRepository.save(emp1);
         employeeRepository.save(emp2);
     }

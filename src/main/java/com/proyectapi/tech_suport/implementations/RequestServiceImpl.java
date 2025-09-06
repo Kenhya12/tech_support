@@ -3,6 +3,9 @@ package com.proyectapi.tech_suport.implementations;
 import com.proyectapi.tech_suport.request.RequestEntity;
 import com.proyectapi.tech_suport.request.RequestStatusEntity;
 import com.proyectapi.tech_suport.service.RequestService;
+
+import jakarta.annotation.PostConstruct;
+
 import com.proyectapi.tech_suport.repository.RequestRepository;
 import com.proyectapi.tech_suport.repository.RequestStatusRepository;
 
@@ -59,6 +62,14 @@ public class RequestServiceImpl implements RequestService {
                     return requestRepository.save(req);
                 }).orElseThrow(() -> new RuntimeException("Request not found"));
     }
+
+    @PostConstruct
+public void initStatuses() {
+    if(requestStatusRepository.findAll().isEmpty()) {
+        requestStatusRepository.save(RequestStatusEntity.builder().name("PENDING").build());
+        requestStatusRepository.save(RequestStatusEntity.builder().name("RESOLVED").build());
+    }
+}
 
     @Override
     public void deleteRequest(Long id) {
