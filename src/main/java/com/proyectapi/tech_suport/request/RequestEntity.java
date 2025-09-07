@@ -6,13 +6,13 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Entity             // Indica que esta clase es una entidad JPA
+@Entity // Indica que esta clase es una entidad JPA
 @Table(name = "request")
-@Getter             // Lombok: genera getters automáticamente
-@Setter             // Lombok: genera setters automáticamente
-@NoArgsConstructor  // Lombok: genera un constructor sin argumentos
+@Getter // Lombok: genera getters automáticamente
+@Setter // Lombok: genera setters automáticamente
+@NoArgsConstructor // Lombok: genera un constructor sin argumentos
 @AllArgsConstructor // Lombok: genera un constructor con todos los argumentos
-@Builder            // Lombok: genera el patrón de diseño Builder
+@Builder // Lombok: genera el patrón de diseño Builder
 public class RequestEntity {
 
     @Id
@@ -30,8 +30,8 @@ public class RequestEntity {
     @JoinColumn(name = "employee_id")
     private EmployeeEntity employee;
 
-    @ManyToOne
-    @JoinColumn(name = "status_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "request_status_id", nullable = false)
     private RequestStatusEntity requestStatus;
 
 }

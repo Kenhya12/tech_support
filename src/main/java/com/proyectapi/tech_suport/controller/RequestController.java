@@ -1,61 +1,96 @@
 package com.proyectapi.tech_suport.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import com.proyectapi.tech_suport.request.RequestDTO;
+import com.proyectapi.tech_suport.request.RequestDTO.RequestStatusDTO;
 import com.proyectapi.tech_suport.request.RequestEntity;
+import com.proyectapi.tech_suport.request.RequestStatusEntity;
 import com.proyectapi.tech_suport.service.RequestService;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/api/v1/requests")
+@RequiredArgsConstructor
 public class RequestController {
 
     private final RequestService requestService;
 
-    @Autowired
-    public RequestController(RequestService requestService) {
-        this.requestService = requestService;
-    }
-
-    // Crear nueva solicitud
-    @PostMapping
-    public ResponseEntity<RequestEntity> createRequest(@RequestBody RequestEntity request) {
-        RequestEntity savedRequest = requestService.createRequest(request);
-        return ResponseEntity.ok(savedRequest);
-    }
-
-    // Obtener todas las solicitudes
     @GetMapping
-    public ResponseEntity<List<RequestEntity>> getAllRequests() {
-        List<RequestEntity> requests = requestService.getAllRequests();
-        return ResponseEntity.ok(requests);
+    public List<RequestDTO> getAllRequests() {
+        return requestService.getAllRequests()
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 
-    // Actualizar solicitud
     @PutMapping("/{id}")
-    public ResponseEntity<RequestEntity> updateRequest(
-            @PathVariable Long id,
-            @RequestBody RequestEntity updatedRequest) {
-        RequestEntity request = requestService.updateRequest(id, updatedRequest);
-        return ResponseEntity.ok(request);
+public RequestDTO updateRequest(@PathVariable Long id, @RequestBody RequestDTO dto) {
+    try {
+        RequestStatusEntity status = null;
+        if (dto.getRequestStatusId() != null) {
+            status = requestService.findStatusById(dto.getRequestStatusId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid status ID"));
+        }
+        RequestEntity entity = dto.toEntity(status);
+        RequestEntity updated = requestService.updateRequest(id, entity);
+        return toDTO(updated);
+    } catch (RuntimeException ex) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
     }
+}
 
-    // Marcar como resuelta
     @PutMapping("/{id}/resolve")
-    public ResponseEntity<RequestEntity> markAsResolved(
-            @PathVariable Long id,
-            @RequestParam String technicianName) {
-        RequestEntity request = requestService.markAsResolved(id, technicianName);
-        return ResponseEntity.ok(request);
+    public RequestDTO markAsResolved(@PathVariable Long id) {
+        try {
+            RequestEntity resolved = requestService.markAsResolved(id, null);
+            return toDTO(resolved);
+        } catch (RuntimeException ex) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+        }
     }
 
-    // Eliminar solicitud (solo si está resuelta)
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRequest(@PathVariable Long id) {
-        requestService.deleteRequest(id);
-        return ResponseEntity.noContent().build();
+    @PostMapping
+public RequestDTO createRequest(@RequestBody RequestDTO dto) {
+    try {
+        RequestStatusEntity status = null;
+        if (dto.getRequestStatusId() != null) {
+            status = requestService.findStatusById(dto.getRequestStatusId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid status ID"));
+        }
+        RequestEntity entity = dto.toEntity(status);
+        RequestEntity saved = requestService.createRequest(entity);
+        return toDTO(saved);
+    } catch (RuntimeException ex) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+}
+
+    private RequestDTO toDTO(RequestEntity entity) {
+        RequestStatusDTO statusDTO = null;
+        if (entity.getRequestStatus() != null) {
+            statusDTO = RequestStatusDTO.builder()
+                    .id(entity.getRequestStatus().getId())
+                    .name(entity.getRequestStatus().getName())
+                    .build();
+        }
+
+        return RequestDTO.builder()
+                .id(entity.getId())
+                .description(entity.getDescription())
+                .requestStatus(statusDTO)
+                .employeeId(entity.getEmployee() != null ? entity.getEmployee().getId() : null)
+                .topic(entity.getTopic())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .resolvedAt(entity.getResolvedAt())
+                .build();
     }
 }

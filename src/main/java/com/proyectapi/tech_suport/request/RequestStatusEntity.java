@@ -1,6 +1,5 @@
 package com.proyectapi.tech_suport.request;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,11 +8,11 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Entity             // Indica que esta clase es una entidad JPA
+@Entity // Indica que esta clase es una entidad JPA
 @Table(name = "request_status") // Nombre de la tabla en la base de datos
-@Data               // Lombok: genera getters, setters, toString, equals y hashCode automáticamente
-@Builder            // Lombok: genera el patrón de diseño Builder
-@NoArgsConstructor  // Lombok: genera un constructor sin argumentos
+@Data // Lombok: genera getters, setters, toString, equals y hashCode automáticamente
+@Builder // Lombok: genera el patrón de diseño Builder
+@NoArgsConstructor // Lombok: genera un constructor sin argumentos
 @AllArgsConstructor // Lombok: genera un constructor con todos los argumentos
 public class RequestStatusEntity {
 
@@ -32,4 +31,12 @@ public class RequestStatusEntity {
     // Fecha y hora en que se creó el estado
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    // Método para establecer la fecha de creación antes de persistir
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
 }

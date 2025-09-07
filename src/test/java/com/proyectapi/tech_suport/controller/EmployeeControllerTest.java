@@ -124,4 +124,11 @@ class EmployeeControllerTest {
         mockMvc.perform(delete("/api/v1/employees/{id}", id))
                 .andExpect(status().isNoContent());
     }
+
+    @Test
+    void testGetEmployeeNotFound() throws Exception {
+        mockMvc.perform(get("/api/v1/employees/{id}", 999L)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
 }

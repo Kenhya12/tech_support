@@ -6,6 +6,7 @@ import com.proyectapi.tech_suport.service.RequestService;
 
 import jakarta.annotation.PostConstruct;
 
+
 import com.proyectapi.tech_suport.repository.RequestRepository;
 import com.proyectapi.tech_suport.repository.RequestStatusRepository;
 
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
 
 @Service
 public class RequestServiceImpl implements RequestService {
@@ -31,27 +34,31 @@ public class RequestServiceImpl implements RequestService {
             LocalDateTime now = LocalDateTime.now();
 
             requestStatusRepository.save(
-                RequestStatusEntity.builder()
-                    .name("PENDING")
-                    .createdAt(now)
-                    .build()
-            );
+                    RequestStatusEntity.builder()
+                            .name("PENDING")
+                            .createdAt(now)
+                            .build());
 
             requestStatusRepository.save(
-                RequestStatusEntity.builder()
-                    .name("RESOLVED")
-                    .createdAt(now)
-                    .build()
-            );
+                    RequestStatusEntity.builder()
+                            .name("RESOLVED")
+                            .createdAt(now)
+                            .build());
         }
     }
 
     @Override
     public RequestEntity createRequest(RequestEntity request) {
-        RequestStatusEntity pendingStatus = requestStatusRepository.findByName("PENDING")
+        // Obtiene el estado inicial "PENDING" desde la base de datos
+        RequestStatusEntity pendingStatus = requestStatusRepository
+                .findByName("PENDING")
                 .orElseThrow(() -> new RuntimeException("Initial status not found"));
+
+        // Asigna el estado y la fecha de creación
         request.setRequestStatus(pendingStatus);
         request.setCreatedAt(LocalDateTime.now());
+
+        // Guarda la solicitud y retorna la entidad persistida
         return requestRepository.save(request);
     }
 
@@ -94,5 +101,10 @@ public class RequestServiceImpl implements RequestService {
                 throw new RuntimeException("Cannot delete a request that is not resolved");
             }
         });
+    }
+
+    @Override
+    public Optional<RequestStatusEntity> findStatusById(Long id) {
+        return requestStatusRepository.findById(id);
     }
 }
