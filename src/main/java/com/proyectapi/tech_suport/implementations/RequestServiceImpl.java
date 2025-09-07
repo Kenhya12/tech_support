@@ -11,6 +11,7 @@ import com.proyectapi.tech_suport.repository.RequestStatusRepository;
 
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -24,12 +25,33 @@ public class RequestServiceImpl implements RequestService {
         this.requestStatusRepository = requestStatusRepository;
     }
 
+    @PostConstruct
+    public void initStatuses() {
+        if (requestStatusRepository.count() == 0) {
+            LocalDateTime now = LocalDateTime.now();
+
+            requestStatusRepository.save(
+                RequestStatusEntity.builder()
+                    .name("PENDING")
+                    .createdAt(now)
+                    .build()
+            );
+
+            requestStatusRepository.save(
+                RequestStatusEntity.builder()
+                    .name("RESOLVED")
+                    .createdAt(now)
+                    .build()
+            );
+        }
+    }
+
     @Override
     public RequestEntity createRequest(RequestEntity request) {
-        // Obtener el estado inicial
         RequestStatusEntity pendingStatus = requestStatusRepository.findByName("PENDING")
                 .orElseThrow(() -> new RuntimeException("Initial status not found"));
         request.setRequestStatus(pendingStatus);
+        request.setCreatedAt(LocalDateTime.now());
         return requestRepository.save(request);
     }
 
@@ -46,7 +68,7 @@ public class RequestServiceImpl implements RequestService {
                     req.setRequestStatus(updatedRequest.getRequestStatus());
                     req.setEmployee(updatedRequest.getEmployee());
                     req.setTopic(updatedRequest.getTopic());
-                    req.setUpdatedAt(java.time.LocalDateTime.now());
+                    req.setUpdatedAt(LocalDateTime.now());
                     return requestRepository.save(req);
                 }).orElseThrow(() -> new RuntimeException("Request not found with id " + id));
     }
@@ -58,18 +80,10 @@ public class RequestServiceImpl implements RequestService {
                     RequestStatusEntity resolvedStatus = requestStatusRepository.findByName("RESOLVED")
                             .orElseThrow(() -> new RuntimeException("Resolved status not found"));
                     req.setRequestStatus(resolvedStatus);
-                    req.setResolvedAt(java.time.LocalDateTime.now());
+                    req.setResolvedAt(LocalDateTime.now());
                     return requestRepository.save(req);
                 }).orElseThrow(() -> new RuntimeException("Request not found"));
     }
-
-    @PostConstruct
-public void initStatuses() {
-    if(requestStatusRepository.findAll().isEmpty()) {
-        requestStatusRepository.save(RequestStatusEntity.builder().name("PENDING").build());
-        requestStatusRepository.save(RequestStatusEntity.builder().name("RESOLVED").build());
-    }
-}
 
     @Override
     public void deleteRequest(Long id) {

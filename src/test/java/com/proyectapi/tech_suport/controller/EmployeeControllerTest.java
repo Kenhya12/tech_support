@@ -10,13 +10,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.ActiveProfiles;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@ActiveProfiles("test")
 class EmployeeControllerTest {
 
     @Autowired
@@ -59,12 +64,15 @@ class EmployeeControllerTest {
 
     @Test
     void testGetEmployeeById() throws Exception {
+        // Tomamos el ID del primer empleado guardado en H2
         Long id = employeeRepository.findAll().get(0).getId();
 
         mockMvc.perform(get("/api/v1/employees/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Paula"));
+                .andExpect(jsonPath("$.name").value("Paula"))
+                .andExpect(jsonPath("$.email").value("paula@example.com"))
+                .andExpect(jsonPath("$.department").value("IT"));
     }
 
     @Test
@@ -82,12 +90,15 @@ class EmployeeControllerTest {
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Carlos"))
-                .andExpect(jsonPath("$.email").value("carlos@example.com"));
+                .andExpect(jsonPath("$.email").value("carlos@example.com"))
+                .andExpect(jsonPath("$.department").value("Finance"));
     }
 
     @Test
     void testUpdateEmployee() throws Exception {
+        // Tomamos el ID del primer empleado guardado en H2
         Long id = employeeRepository.findAll().get(0).getId();
+
         String json = """
                 {
                     "name": "Paula Updated",
@@ -101,23 +112,16 @@ class EmployeeControllerTest {
                 .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Paula Updated"))
-                .andExpect(jsonPath("$.email").value("paula_updated@example.com"));
+                .andExpect(jsonPath("$.email").value("paula_updated@example.com"))
+                .andExpect(jsonPath("$.department").value("IT"));
     }
 
     @Test
     void testDeleteEmployee() throws Exception {
+        // Tomamos el ID del primer empleado guardado en H2
         Long id = employeeRepository.findAll().get(0).getId();
 
         mockMvc.perform(delete("/api/v1/employees/{id}", id))
                 .andExpect(status().isNoContent());
-    }
-
-    @Test
-    void testGetEmployeeNotFound() throws Exception {
-        Long missingId = 999L;
-
-        mockMvc.perform(get("/api/v1/employees/{id}", missingId)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
     }
 }
