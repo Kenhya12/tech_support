@@ -2,7 +2,6 @@ package com.proyectapi.tech_suport.controller;
 
 import com.proyectapi.tech_suport.request.RequestStatusEntity;
 import com.proyectapi.tech_suport.service.RequestStatusService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -11,10 +10,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/request-status")
-@RequiredArgsConstructor
 public class RequestStatusController {
 
     private final RequestStatusService requestStatusService;
+
+    public RequestStatusController(RequestStatusService requestStatusService) {
+        this.requestStatusService = requestStatusService;
+    }
 
     // GET /api/v1/request-status
     @GetMapping

@@ -4,7 +4,6 @@ import com.proyectapi.tech_suport.exceptions.ResourceNotFoundException;
 import com.proyectapi.tech_suport.request.RequestStatusEntity;
 import com.proyectapi.tech_suport.repository.RequestStatusRepository;
 import com.proyectapi.tech_suport.service.RequestStatusService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,10 +14,13 @@ import java.util.Optional;
  * Proporciona operaciones CRUD para RequestStatusEntity.
  */
 @Service
-@RequiredArgsConstructor
 public class RequestStatusServiceImpl implements RequestStatusService {
 
     private final RequestStatusRepository requestStatusRepository;
+
+    public RequestStatusServiceImpl(RequestStatusRepository requestStatusRepository) {
+        this.requestStatusRepository = requestStatusRepository;
+    }
 
     /**
      * Obtiene todos los estados de solicitud existentes.

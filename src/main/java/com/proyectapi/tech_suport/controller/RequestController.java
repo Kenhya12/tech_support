@@ -9,7 +9,6 @@ import com.proyectapi.tech_suport.service.RequestService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,10 +17,13 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/requests")
-@RequiredArgsConstructor
 public class RequestController {
 
     private final RequestService requestService;
+
+    public RequestController(RequestService requestService) {
+        this.requestService = requestService;
+    }
 
     @GetMapping
     public List<RequestDTO> getAllRequests() {
