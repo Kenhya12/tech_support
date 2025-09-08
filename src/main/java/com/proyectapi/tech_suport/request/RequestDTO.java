@@ -21,13 +21,13 @@ public class RequestDTO {
 
     // Convierte este DTO a entidad
     public RequestEntity toEntity(RequestStatusEntity status) {
-    RequestEntity entity = new RequestEntity();
-    entity.setId(this.id);
-    entity.setDescription(this.description);
-    entity.setTopic(this.topic);
-    entity.setRequestStatus(status); // ya validado antes
-    return entity;
-}
+        RequestEntity entity = new RequestEntity();
+        entity.setId(this.id);
+        entity.setDescription(this.description);
+        entity.setTopic(this.topic);
+        entity.setRequestStatus(status); // ya validado antes
+        return entity;
+    }
 
     // Convierte una entidad a DTO
     public static RequestDTO fromEntity(RequestEntity entity) {
@@ -46,9 +46,8 @@ public class RequestDTO {
                 .description(entity.getDescription())
                 .requestStatus(statusDTO)
                 .requestStatusId(entity.getRequestStatus() != null ? entity.getRequestStatus().getId() : null)
-                .requestStatus(statusDTO)
-                .requestStatusId(entity.getRequestStatus() != null ? entity.getRequestStatus().getId() : null)
                 .employeeId(entity.getEmployee() != null ? entity.getEmployee().getId() : null)
+                .topic(entity.getTopic())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .resolvedAt(entity.getResolvedAt())
@@ -60,5 +59,9 @@ public class RequestDTO {
     public static class RequestStatusDTO {
         private Long id;
         private String name;
+    }
+
+    public String getRequestStatusName() {
+        return requestStatus != null ? requestStatus.getName() : null;
     }
 }
