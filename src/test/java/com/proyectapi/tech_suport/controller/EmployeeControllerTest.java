@@ -1,7 +1,7 @@
 package com.proyectapi.tech_suport.controller;
 
 import com.proyectapi.tech_suport.employee.EmployeeEntity;
-import com.proyectapi.tech_suport.request.EmployeeRepository;
+import com.proyectapi.tech_suport.repository.EmployeeRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

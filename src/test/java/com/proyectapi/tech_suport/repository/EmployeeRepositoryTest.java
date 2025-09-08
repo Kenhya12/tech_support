@@ -1,10 +1,10 @@
-package com.proyectapi.tech_suport.employee;
+package com.proyectapi.tech_suport.repository;
+
+import com.proyectapi.tech_suport.employee.EmployeeEntity;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
-import com.proyectapi.tech_suport.repository.EmployeeRepository;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package com.proyectapi.tech_suport.request;
+package com.proyectapi.tech_suport.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
