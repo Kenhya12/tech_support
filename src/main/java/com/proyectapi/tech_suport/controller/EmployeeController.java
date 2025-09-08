@@ -3,7 +3,6 @@ package com.proyectapi.tech_suport.controller;
 import com.proyectapi.tech_suport.employee.EmployeeDTO;
 import com.proyectapi.tech_suport.service.EmployeeReadService;
 import com.proyectapi.tech_suport.service.EmployeeWriteService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +17,6 @@ public class EmployeeController {
     private final EmployeeReadService employeeReadService;
     private final EmployeeWriteService employeeWriteService;
 
-    @Autowired
     public EmployeeController(EmployeeReadService employeeReadService, EmployeeWriteService employeeWriteService) {
         this.employeeReadService = employeeReadService;
         this.employeeWriteService = employeeWriteService;
