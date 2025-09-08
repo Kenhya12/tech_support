@@ -27,6 +27,10 @@ public class RequestServiceImpl implements RequestService {
         this.requestRepository = requestRepository;
         this.requestStatusRepository = requestStatusRepository;
     }
+    @Override
+    public List<RequestEntity> getRequestsByEmployee(Long employeeId) {
+        return requestRepository.findByEmployeeId(employeeId);
+    }
 
     @PostConstruct
     public void initStatuses() {

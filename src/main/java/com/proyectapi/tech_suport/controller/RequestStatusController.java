@@ -43,13 +43,14 @@ public class RequestStatusController {
 
     // PUT /api/v1/request-status/{id}
     @PutMapping("/{id}")
-    public RequestStatusEntity updateStatus(@PathVariable Long id, @RequestBody RequestStatusEntity status) {
-        try {
-            return requestStatusService.updateStatus(id, status);
-        } catch (RuntimeException ex) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
-        }
-    }
+public RequestStatusEntity updateStatus(@PathVariable Long id, @RequestBody RequestStatusEntity status) {
+    return requestStatusService.getStatusById(id)
+            .map(existing -> {
+                existing.setName(status.getName());
+                return requestStatusService.updateStatus(id, existing);
+            })
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Status with id " + id + " not found"));
+}
 
     // DELETE /api/v1/request-status/{id}
     @DeleteMapping("/{id}")

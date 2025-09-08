@@ -7,10 +7,11 @@ import com.proyectapi.tech_suport.request.RequestStatusEntity;
 import com.proyectapi.tech_suport.request.RequestEntity;
 
 public interface RequestService {
-    RequestEntity createRequest(RequestEntity request); // <-- este método debe existir
     List<RequestEntity> getAllRequests();
-    RequestEntity updateRequest(Long id, RequestEntity updatedRequest);
-    RequestEntity markAsResolved(Long id, String technicianName);
-    void deleteRequest(Long id);
     Optional<RequestStatusEntity> findStatusById(Long id);
+    RequestEntity createRequest(RequestEntity entity);
+    RequestEntity updateRequest(Long id, RequestEntity entity);
+    RequestEntity markAsResolved(Long id, String resolvedBy);
+    void deleteRequest(Long id);
+    List<RequestEntity> getRequestsByEmployee(Long employeeId);
 }

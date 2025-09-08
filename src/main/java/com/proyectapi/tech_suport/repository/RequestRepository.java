@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface RequestRepository extends JpaRepository<RequestEntity, Long> {
     List<RequestEntity> findAllByOrderByCreatedAtAsc(); 
-    
+    List<RequestEntity> findByEmployeeId(Long employeeId);
 }
 
 

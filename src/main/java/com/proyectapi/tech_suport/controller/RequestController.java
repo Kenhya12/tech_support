@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @RestController
 @RequestMapping("/api/v1/requests")
 public class RequestController {
@@ -34,20 +33,20 @@ public class RequestController {
     }
 
     @PutMapping("/{id}")
-public RequestDTO updateRequest(@PathVariable Long id, @RequestBody RequestDTO dto) {
-    try {
-        RequestStatusEntity status = null;
-        if (dto.getRequestStatusId() != null) {
-            status = requestService.findStatusById(dto.getRequestStatusId())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid status ID"));
+    public RequestDTO updateRequest(@PathVariable Long id, @RequestBody RequestDTO dto) {
+        try {
+            RequestStatusEntity status = null;
+            if (dto.getRequestStatusId() != null) {
+                status = requestService.findStatusById(dto.getRequestStatusId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid status ID"));
+            }
+            RequestEntity entity = dto.toEntity(status);
+            RequestEntity updated = requestService.updateRequest(id, entity);
+            return toDTO(updated);
+        } catch (RuntimeException ex) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
         }
-        RequestEntity entity = dto.toEntity(status);
-        RequestEntity updated = requestService.updateRequest(id, entity);
-        return toDTO(updated);
-    } catch (RuntimeException ex) {
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
     }
-}
 
     @PutMapping("/{id}/resolve")
     public RequestDTO markAsResolved(@PathVariable Long id) {
@@ -60,20 +59,20 @@ public RequestDTO updateRequest(@PathVariable Long id, @RequestBody RequestDTO d
     }
 
     @PostMapping
-public RequestDTO createRequest(@RequestBody RequestDTO dto) {
-    try {
-        RequestStatusEntity status = null;
-        if (dto.getRequestStatusId() != null) {
-            status = requestService.findStatusById(dto.getRequestStatusId())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid status ID"));
+    public RequestDTO createRequest(@RequestBody RequestDTO dto) {
+        try {
+            RequestStatusEntity status = null;
+            if (dto.getRequestStatusId() != null) {
+                status = requestService.findStatusById(dto.getRequestStatusId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid status ID"));
+            }
+            RequestEntity entity = dto.toEntity(status);
+            RequestEntity saved = requestService.createRequest(entity);
+            return toDTO(saved);
+        } catch (RuntimeException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
         }
-        RequestEntity entity = dto.toEntity(status);
-        RequestEntity saved = requestService.createRequest(entity);
-        return toDTO(saved);
-    } catch (RuntimeException ex) {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
-}
 
     private RequestDTO toDTO(RequestEntity entity) {
         RequestStatusDTO statusDTO = null;
@@ -94,5 +93,23 @@ public RequestDTO createRequest(@RequestBody RequestDTO dto) {
                 .updatedAt(entity.getUpdatedAt())
                 .resolvedAt(entity.getResolvedAt())
                 .build();
+    }
+
+    @GetMapping("/employee/{employeeId}")
+    public List<RequestDTO> getRequestsByEmployee(@PathVariable Long employeeId) {
+        return requestService.getRequestsByEmployee(employeeId)
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteRequest(@PathVariable Long id) {
+        try {
+            requestService.deleteRequest(id);
+        } catch (RuntimeException ex) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+        }
     }
 }
