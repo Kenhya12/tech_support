@@ -10,8 +10,8 @@ import org.springframework.web.server.ResponseStatusException;
 import com.proyectapi.tech_suport.employee.EmployeeDTO;
 import com.proyectapi.tech_suport.employee.EmployeeEntity;
 import com.proyectapi.tech_suport.employee.EmployeeMapper;
+import com.proyectapi.tech_suport.request.EmployeeRepository;
 import com.proyectapi.tech_suport.service.EmployeeWriteService;
-import com.proyectapi.tech_suport.repository.EmployeeRepository;
 import com.proyectapi.tech_suport.service.EmployeeReadService;
 
 import java.util.List;

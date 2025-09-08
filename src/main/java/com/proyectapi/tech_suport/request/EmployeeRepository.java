@@ -1,11 +1,10 @@
-package com.proyectapi.tech_suport.repository;
+package com.proyectapi.tech_suport.request;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
 import com.proyectapi.tech_suport.employee.EmployeeEntity;
 
 @Repository
 public interface EmployeeRepository extends JpaRepository<EmployeeEntity, Long> {
-    // Aquí puedes agregar métodos personalizados si los necesitas
+    // Puedes agregar consultas personalizadas si lo necesitas más adelante
 }
