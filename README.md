@@ -81,4 +81,6 @@ erDiagram
 
 ```
 
+## Test de cobertura.
 
+![Texto alternativo](src/asset/cover-test.png)
