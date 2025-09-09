@@ -77,9 +77,3 @@ erDiagram
     SOLICITUD }o--|| DEPARTAMENTO_TECNICO : "dirigida a"
     SOLICITUD }o--|| TECNICO : "atendida por"
     TECNICO }o--|| DEPARTAMENTO_TECNICO : "pertenece a"
-
-    ```
-
-## Test de cobertura
-
-![Test de cobertura](src/asset/cover-test.png)
